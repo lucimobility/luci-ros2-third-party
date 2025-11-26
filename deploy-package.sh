@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# NOTE: THIS SHOULD NOT BE RAN MANAULLY, THIS IS A SUPPORTING FILE FOR THE GITHUB ACTIONS
+# NOTE: THIS SHOULD NOT BE RAN MANUALLY, THIS IS A SUPPORTING FILE FOR THE GITHUB ACTIONS
 
 # NOTE: It is assumed that this file is at the root dir of the package, that is its next to package.xml file
 
