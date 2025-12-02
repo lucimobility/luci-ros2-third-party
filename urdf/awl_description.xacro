@@ -60,7 +60,7 @@
   <link name="right_main_wheel">
     <visual>
       <geometry>
-        <mesh filename="package://awl_description/meshes/main_wheel.dae" scale="1 1 1" />
+        <mesh filename="package://luci_third_party/meshes/main_wheel.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -84,7 +84,7 @@
   <link name="left_main_wheel">
     <visual>
       <geometry>
-        <mesh filename="package://awl_description/meshes/main_wheel.dae" scale="1 1 1" />
+        <mesh filename="package://luci_third_party/meshes/main_wheel.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -111,7 +111,7 @@
   <link name="front_right_wheel">
     <visual>
       <geometry>
-        <mesh filename="package://awl_description/meshes/caster_wheels.dae" scale="1 1 1" />
+        <mesh filename="package://luci_third_party/meshes/caster_wheels.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -144,7 +144,7 @@
   <link name="front_left_wheel">
     <visual>
       <geometry>
-        <mesh filename="package://awl_description/meshes/caster_wheels.dae" scale="1 1 1" />
+        <mesh filename="package://luci_third_party/meshes/caster_wheels.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -179,7 +179,7 @@
   <link name="rear_right_wheel">
     <visual>
       <geometry>
-        <mesh filename="package://awl_description/meshes/caster_wheels.dae" scale="1 1 1" />
+        <mesh filename="package://luci_third_party/meshes/caster_wheels.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
@@ -212,7 +212,7 @@
   <link name="rear_left_wheel">
     <visual>
       <geometry>
-        <mesh filename="package://awl_description/meshes/caster_wheels.dae" scale="1 1 1" />
+        <mesh filename="package://luci_third_party/meshes/caster_wheels.dae" scale="1 1 1" />
       </geometry>
     </visual>
     <collision>
