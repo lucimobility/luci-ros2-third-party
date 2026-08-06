@@ -4,3 +4,15 @@ install/
 log/
 debian/
 .obj-*
+
+# Compiled objects
+*.o
+*.so
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
