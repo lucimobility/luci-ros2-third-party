@@ -19,6 +19,19 @@ repository, with notes about authorship and licensing where available.
 
 ---
 
+## message_filters
+
+- **Project**: [message_filters](https://github.com/ros2/message_filters)
+- **Description**: Used by `luci_full_camera_pointcloud` to time-synchronize the three depth camera
+  streams (`message_filters::sync_policies::ApproximateTime`) before combining them into one
+  point cloud.
+- **License**: BSD-3-Clause (per upstream — distinct from the blanket ROS 2/Apache-2.0 entry
+  above; verify against the copy vendored in your ROS 2 distribution).
+- **Notes**: See [the upstream LICENSE file](https://github.com/ros2/message_filters/blob/rolling/LICENSE)
+  for the full license text.
+
+---
+
 ## COLLADA meshes (3D assets)
 
 - **Files**: `meshes/main_wheel.dae`, `meshes/caster_wheels.dae`
