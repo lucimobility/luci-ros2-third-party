@@ -42,7 +42,7 @@ For changes that are in reference to examples or general information about how t
 
 For changes that are an additional feature / package or is a fix to an existing third-party package please open a PR and issue in the this repo [third-party repo](https://github.com/lucimobility/luci-ros2-third-party). This repo was setup to allow a single point of collaboration for all users of the SDK if they desire to push the project forward with their contributions.
 
-We see this SDK as a method to get researchers and hobbyists alike all working towards the goal of a better world for those who use a LUCI product.
+We see this SDK as a method to get researchers and hobbyists alike all working towards the goal of a better world for those who use powered mobility.
 
 It should also be noted that based on the usefulness of a contributed package or its direct reliance on LUCI we may decide to pull individual packages or code out of the third party repo and into its own separate repo / LUCI package binary.
 
