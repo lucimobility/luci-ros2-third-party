@@ -58,20 +58,21 @@ public:
 
 private:
     /// @brief Fires once per matched, time-synchronized triple of depth frames.
-    /// @param leftDepthImage
-    /// @param rightDepthImage
-    /// @param rearDepthImage
+    /// @param leftDepthImage Left camera's raw 16-bit depth image.
+    /// @param rightDepthImage Right camera's raw 16-bit depth image.
+    /// @param rearDepthImage Rear camera's raw 16-bit depth image.
     void onDepthFramesSynced(
         const sensor_msgs::msg::Image::ConstSharedPtr & leftDepthImage,
         const sensor_msgs::msg::Image::ConstSharedPtr & rightDepthImage,
         const sensor_msgs::msg::Image::ConstSharedPtr & rearDepthImage);
 
     /// @brief Get camera intrinsics & transform data.
-    /// @param msg
-    /// @param intrinsics
-    /// @param transform
-    /// @param received
-    /// @param cameraLocation
+    /// @param msg The incoming LuciCameraInfo message to parse.
+    /// @param intrinsics Out param: filled in from `msg` on success.
+    /// @param transform Out param: filled in from `msg` on success.
+    /// @param received Out param: set true once `msg` has been successfully parsed; further
+    /// calls are then ignored (see the latch check at the top of the function body).
+    /// @param cameraLocation Camera identifier ("left"/"right"/"rear"), used only for logging.
     void storeCameraInfo(
         const luci_messages::msg::LuciCameraInfo::SharedPtr & msg,
         CameraIntrinsics & intrinsics,
@@ -80,12 +81,12 @@ private:
         const std::string & cameraLocation);
 
     /// @brief Subscribes to each camera's LuciCameraInfo topic.
-    /// @param topic
-    /// @param intrinsics
-    /// @param transform
-    /// @param received
-    /// @param cameraLocation
-    /// @return
+    /// @param topic Topic name to subscribe to.
+    /// @param intrinsics Out param, forwarded to storeCameraInfo() on every message.
+    /// @param transform Out param, forwarded to storeCameraInfo() on every message.
+    /// @param received Out param, forwarded to storeCameraInfo() on every message.
+    /// @param cameraLocation Camera identifier ("left"/"right"/"rear"), used only for logging.
+    /// @return The created subscription; must be kept alive by the caller.
     rclcpp::Subscription<luci_messages::msg::LuciCameraInfo>::SharedPtr subscribeCameraInfo(
         const std::string & topic,
         CameraIntrinsics & intrinsics,
@@ -94,11 +95,12 @@ private:
         const std::string & cameraLocation);
 
     /// @brief Converts a depth image straight into a base_link-frame point cloud.
-    /// @param depthImage
-    /// @param intrinsics
-    /// @param tf
-    /// @param cameraLocation
-    /// @return
+    /// @param depthImage Raw 16-bit depth image to convert.
+    /// @param intrinsics This camera's intrinsics, used to project pixels to camera space.
+    /// @param tf This camera's transform, used to rotate/translate camera space into base_link.
+    /// @param cameraLocation Camera identifier ("left"/"right"/"rear"), used only for logging.
+    /// @return An organized (width x height) XYZ point cloud in the `base_link` frame; empty if
+    /// `depthImage` fails validation.
     sensor_msgs::msg::PointCloud2 convertDepthToBaseLinkPointCloud(
         const sensor_msgs::msg::Image::ConstSharedPtr & depthImage,
         const CameraIntrinsics & intrinsics,
@@ -107,11 +109,11 @@ private:
 
     /// @brief Concatenates all three base_link-frame camera clouds into one, stamped
     /// with the most recent of the three capture times.
-    /// @param leftCloud
-    /// @param rightCloud
-    /// @param rearCloud
-    /// @param timestamp
-    /// @return
+    /// @param leftCloud Left camera's cloud in the base_link frame.
+    /// @param rightCloud Right camera's cloud in the base_link frame.
+    /// @param rearCloud Rear camera's cloud in the base_link frame.
+    /// @param timestamp Header stamp to apply to the combined cloud.
+    /// @return The concatenation of all three input clouds.
     sensor_msgs::msg::PointCloud2 combinePointClouds(
         const sensor_msgs::msg::PointCloud2 & leftCloud,
         const sensor_msgs::msg::PointCloud2 & rightCloud,

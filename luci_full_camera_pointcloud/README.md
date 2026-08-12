@@ -53,6 +53,18 @@ colcon build --packages-select luci_full_camera_pointcloud
 ros2 launch luci_full_camera_pointcloud luci_full_camera_pointcloud.launch.py
 ```
 
+## Tuning
+
+These are compile-time constants at the top of `src/luci_full_camera_pointcloud.cpp`
+
+| Constant | Value | Meaning |
+| --- | --- | --- |
+| `DEPTH_SCALE` | `0.0001` | Meters per raw depth count (i.e. each unit in the 16-bit depth image is 0.1mm). |
+| `SYNC_SLOP_SECONDS` | `0.05` | Max allowed `header.stamp` spread between the three depth frames for `ApproximateTime` to consider them a match. |
+| `SYNC_QUEUE_SIZE` | `5` | Depth-frame history kept per camera by the `message_filters::Synchronizer` while it searches for a match. |
+| `CAMERA_INFO_QUEUE_SIZE` | `1` | Queue depth for the `LuciCameraInfo` subscriptions; only the first valid message per camera is ever used (see `storeCameraInfo`'s latch). |
+| `PUBLISHER_QUEUE_SIZE` | `3` | Queue depth for the `luci/depth_combined_pointcloud` publisher. |
+
 ## Known limitations
 
 - No overlap handling when concatenating the three cameras into `luci/depth_combined_pointcloud`:

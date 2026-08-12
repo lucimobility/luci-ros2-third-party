@@ -204,7 +204,7 @@ void FullCameraPointcloudNode::onDepthFramesSynced(
     {
         RCLCPP_WARN_THROTTLE(
             this->get_logger(), *this->get_clock(), 5000,
-            "Not publishing: waiting for camera info  (left=%s, right=%s, rear=%s)",
+            "Not publishing: waiting for camera info (left=%s, right=%s, rear=%s)",
             this->leftCameraInfoReceived ? "ready" : "waiting",
             this->rightCameraInfoReceived ? "ready" : "waiting",
             this->rearCameraInfoReceived ? "ready" : "waiting");
