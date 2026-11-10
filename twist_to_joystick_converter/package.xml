@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>twist_to_joystick_converter</name>
+  <version>0.1.0</version>
+  <description>Converts geometry_msgs/Twist velocity commands (cmd_vel) into LuciJoystick commands for a LUCI-equipped wheelchair.</description>
+  <maintainer email="rupak@luci.com">Rupak Dasgupta</maintainer>
+  <license>Apache License 2.0</license>
+
+  <url type="repository">https://github.com/lucimobility/luci-ros2-third-party</url>
+  <url type="bugtracker">https://github.com/lucimobility/luci-ros2-third-party/issues</url>
+
+  <depend>rclpy</depend>
+  <depend>geometry_msgs</depend>
+  <depend>luci_messages</depend>
+  <depend>rcl_interfaces</depend>
+
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

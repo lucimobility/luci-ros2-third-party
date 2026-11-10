@@ -1,0 +1,51 @@
+# Copyright (c) 2026 LUCI Mobility, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Calibration for the Quickie Q500M.
+#
+# Notes on the forward/back fit (for the chair test):
+#   * The cubic below passes through the original two linear fits only at
+#     v = -0.3, 0.5 and 1.0 m/s and differs from them by up to about 10
+#     joystick units in between. The original linear fits were
+#       forward (v > 0): js = (v + 0.0206) / 0.010724
+#       reverse (v < 0): js = (v - 0.0004) / 0.00316
+#   * Forward reaches ~1.05 m/s at js 100, reverse only ~0.32 m/s at js -100.
+# Notes on the left/right fit:
+#   * A positive angular.z (counter-clockwise) gives a negative left_right.
+#   * Because of angular_offset, any nonzero yaw gives about +5, in the same
+#     direction whichever way it points, even when tiny (+/-1e-6 rad/s both
+#     give 5). Only an exact 0.0 gives 0.
+# Keyed with a wildcard so it still applies if the node is renamed or
+# launched in a namespace.
+/**:
+  ros__parameters:
+    # Values may be written as integers or floats. Parameters are read once at
+    # startup and cannot be changed with `ros2 param set`.
+    #
+    # Forward/back: js = c3 * v^3 - c2 * v^2 + c1 * v   (v in m/s)
+    forward_coeff_3: 208.6
+    forward_coeff_2: 316.7
+    forward_coeff_1: 203.3
+    # Left/right: js = (w - angular_offset) / angular_slope   (w in rad/s)
+    angular_offset: 0.0676
+    angular_slope: -0.012212
+    # Joystick output limits
+    js_min: -100
+    js_max: 100
+    # Seconds without a cmd_vel before zero joystick is published.
+    # A value <= 0 disables this.
+    cmd_vel_timeout: 0.5
+    # LuciJoystick.input_source: 1 = autonomous remote, 5 = shared remote.
+    # LUCI only uses commands from an input source that has been activated.
+    input_source: 1

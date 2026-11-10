@@ -29,6 +29,8 @@ Please familiarize yourself with the Apache License 2.0 before contributing.
 See [luci_full_camera_pointcloud](luci_full_camera_pointcloud/)
 for an example of a third-party-contributed package that follows the conventions above (license
 header, copyright notice, `NOTICE.md` for third-party dependencies, README).
+[twist_to_joystick_converter](twist_to_joystick_converter/) is the equivalent example for a
+Python (`ament_python`) package.
 
 ## Contributing to existing LUCI Packages
 
@@ -93,7 +95,9 @@ Once running the development image run the following steps inside of the contain
 
 At this point any node should be available to your system through a `ros2 run` command.
 
-**NOTE: Theres is also a provided `build-package.sh` script that can be used to build the ROS package and an installable `.deb` file. This is what the LUCI team uses for its automatic deployments.**
+The repo also contains stand-alone packages in subdirectories, such as `luci_full_camera_pointcloud` and `twist_to_joystick_converter`. The `colcon build` above only builds the root `luci_third_party` package, because colcon does not look for packages inside a directory that is already a package. To build one of the stand-alone packages, point colcon at it, for example `colcon build --paths twist_to_joystick_converter`. Each has its own README.
+
+**NOTE: Theres is also a provided `build-package.sh` script that can be used to build the ROS package and an installable `.deb` file. This is what the LUCI team uses for its automatic deployments. The `.deb` is generated for the root `luci_third_party` package only; the stand-alone packages above are built from source.**
 
 **Please be aware that the `deploy-package.sh` and the `sign-package.sh` scripts are NOT to be ran by anyone outside of the LUCI company. They will fail if ran by anyone without proper credentials and are only for the automated release process used by LUCI.**
 
@@ -107,7 +111,7 @@ When a new version of this package is ready to be released there are a couple st
 
     - This should be its own separate PR and should only update the package.xml `<version> </version>` tag.
     - LUCI follows [semver](https://semver.org/) style versioning so MAJOR.MINOR.PATCH versions are expected.
-    - It is okay to not put out versions until multiple changes have happened to the code. 
+    - It is okay to not put out versions until multiple changes have happened to the code.
 2. Once the version increment is merged you simply need to create an official release in github. Make sure you make the release version the same as what is now in `package.xml`. We have chosen to keep github release and package version in sync.
     - This should trigger an action to auto run called `Create and Sign Package` which you can monitor in the github actions panel. This should grab the released code, build it, make an installable .deb file, gdb sign it and push it to jrog artifactory.
 

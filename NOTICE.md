@@ -9,7 +9,7 @@ repository, with notes about authorship and licensing where available.
 - **Project**: ROS 2 (Robot Operating System 2)
 - **Description**: Middleware, client libraries, and tools used by the
   packages and launch files in this repository. This includes, but is not
-  limited to, `rclcpp`, `geometry_msgs`, `std_msgs`, `xacro`, `rviz` and the
+  limited to, `rclcpp`, `rclpy`, `geometry_msgs`, `std_msgs`, `xacro`, `rviz` and the
   `ament` build tooling referenced in `package.xml` and `CMakeLists.txt`.
 - **License**: Apache License 2.0
 - **Notes**: Full text of the Apache License 2.0 is included in
