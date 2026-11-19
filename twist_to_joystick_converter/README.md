@@ -6,7 +6,12 @@ wheelchair. It is intended as a starting point for researchers.
 
 > **Safety.** This node produces joystick commands for a real wheelchair.
 >
-> - The calibration constants are for the Quickie Q500M and are **not yet validated on a chair**.
+> - The calibration constants are for the Quickie Q500M **drive
+>   profile 3 at speed setting 3**.
+> - The calibration only holds for the chair, drive profile and speed setting it was measured at.
+>   You are encouraged to measure your own
+>   and keep a params file for each chair, profile and speed setting you use (see
+>   [Using your own calibration](#using-your-own-calibration)). Contributions are welcome.
 > - The node does **not** activate remote control, and it does **not** hand control back when it
 >   exits. You activate and remove it by hand (see
 >   [Activating remote control](#activating-remote-control)). LUCI ignores the commands until a
@@ -55,8 +60,8 @@ or LUCI disregards the commands:
 
 ```text
 cmd_vel (Twist) ─► twist_to_joystick() ─► latest command
-                    cubic fit (linear.x -> forward_back)
-                    linear fit (angular.z -> left_right)
+                    line through zero (linear.x -> forward_back)
+                    dead zone, then a line (angular.z -> left_right)
                     clamp to [js_min, js_max]
 
 20 Hz timer ─► latest command (or zero if no cmd_vel within cmd_vel_timeout)
@@ -91,9 +96,12 @@ dependency.
 
 ## Behavior
 
-- **Conversion.** Forward/back is `c3 * v^3 - c2 * v^2 + c1 * v` with `v = linear.x` in m/s.
-  Left/right is `(w - angular_offset) / angular_slope` with `w = angular.z` in rad/s. Both are
-  truncated toward zero and clamped to `[js_min, js_max]`. A zero input gives zero output.
+- **Conversion.** Forward/back is `100 * v / max_forward_speed` for `v >= 0` and
+  `100 * v / max_reverse_speed` for `v < 0`, with `v = linear.x` in m/s: the joystick value is the
+  percentage of the profile's top speed. Left/right is, for a nonzero `w = angular.z` in rad/s,
+  `turn_dead_zone + (100 - turn_dead_zone) * |w| / max_turn_rate` with the sign flipped
+  (a positive `angular.z` gives a negative `left_right`). Both are rounded to the nearest whole
+  number and clamped to `[js_min, js_max]`. A zero input gives zero output.
 - **Bad input.** NaN, infinity, or a magnitude above 100 m/s or rad/s gives a zero joystick
   command and a warning, never a crash.
 - **Publishing.** The node publishes the latest command at 20 Hz, whether or not new `cmd_vel`
@@ -106,42 +114,37 @@ dependency.
 
 ### About the calibration
 
-The constants are an open-loop fit from joystick percent to chair speed. Read these before
-trusting the numbers:
+The constants are an open-loop fit from joystick percent to chair speed. They were measured on
+profile 3 at speed setting 3. Read these before trusting the numbers:
 
 - **Sign.** A positive `angular.z` (counter-clockwise) gives a negative `left_right`.
-- **Range.** Forward reaches about 1.05 m/s at `forward_back` 100, but reverse only about
-  0.32 m/s at -100. Commands beyond that saturate at the limit.
-- **Speed setting.** Joystick percent is a fraction of the chair's maximum speed, which depends
-  on the chair's speed setting and drive profile (`luci/speed_setting`, `luci/chair_profile`).
-  The values only hold for the setting they were measured at. LUCI's obstacle scaling can also
-  lower the speed the chair actually drives.
-- **Cubic vs. linear.** The forward/back cubic was fitted to two earlier linear fits:
-  `(v + 0.0206) / 0.010724` for forward and `(v - 0.0004) / 0.00316` for reverse. The cubic
-  matches them at -0.3, 0.5 and 1.0 m/s, but differs by up to about 10 joystick units in between
-  (for example 0.2 m/s gives 29.7 from the cubic and 20.6 from the linear fit). Which one is
-  closer to the chair is not yet known.
-- **Small yaw.** Because of `angular_offset`, any nonzero yaw gives about +5 on `left_right`, in
-  the same direction whichever way the yaw points (`1e-6` and `-1e-6` rad/s both give 5). Only an
-  exact `0.0` gives 0. A planner that publishes a tiny nonzero yaw when driving "straight" will
-  make the chair turn slightly.
+- **Speed setting and profile.** The chair's top speeds depend on the speed setting and drive
+  profile (`luci/speed_setting`, `luci/chair_profile`). The values only hold for the setting they
+  were measured at: profile 3 at speed setting 3. LUCI's obstacle scaling can also lower the speed
+  the chair actually drives.
+- **Load.** The readings were taken with one rider. A different load may change the chair's
+  response, especially for turning.
+- **Small yaw.** Any nonzero yaw gives at least `turn_dead_zone` on `left_right`, in the
+  matching direction (`1e-6` rad/s gives -18 and `-1e-6` gives 18). Only an exact `0.0` gives 0.
+  Below about joystick 25 the chair does not hold a turn, so a planner that publishes a tiny
+  nonzero yaw when driving "straight" will normally not make it turn.
 
 ## Parameters
 
 Defaults are the Q500M values in `config/q500m.yaml`. All parameters are **read once at
 startup**: `ros2 param set` on them is rejected, so change them in a params file and restart. Values
 may be written as integers or floats in YAML. The node exits with an error if a value is invalid:
-not a number or not finite, an `angular_slope` of zero, constants that overflow, `js_min` or
+not a number or not finite, a speed or turn rate that is not above zero, a `turn_dead_zone` outside
+`[0, 100)`, constants that overflow, `js_min` or
 `js_max` that is not a whole number inside `[-100, 100]` (or `js_min > js_max`), a
 `cmd_vel_timeout` above 3600, or an `input_source` other than 1 or 5.
 
 | Parameter | Default | Meaning |
 | --- | --- | --- |
-| `forward_coeff_3` | `208.6` | Cubic term of the forward/back fit |
-| `forward_coeff_2` | `316.7` | Quadratic term (subtracted) |
-| `forward_coeff_1` | `203.3` | Linear term |
-| `angular_offset` | `0.0676` | Offset in the left/right fit |
-| `angular_slope` | `-0.012212` | Slope in the left/right fit |
+| `max_forward_speed` | `1.028` | The chair's top forward speed in m/s (2.3 mph), which is joystick 100 |
+| `max_reverse_speed` | `0.313` | The chair's top reverse speed in m/s (0.7 mph), which is joystick -100 |
+| `max_turn_rate` | `0.524` | Turn rate in rad/s at joystick 100 |
+| `turn_dead_zone` | `18.0` | Joystick units below which the chair does not turn; any nonzero yaw gives at least this |
 | `js_min` | `-100` | Lower joystick limit (whole number, `>= -100`) |
 | `js_max` | `100` | Upper joystick limit (whole number, `<= 100`) |
 | `cmd_vel_timeout` | `0.5` | Seconds without `cmd_vel` before zero joystick is published. `<= 0` disables this; at most `3600` |
@@ -154,6 +157,16 @@ Copy `config/q500m.yaml`, edit the values, and pass it to the launch file:
 ```bash
 ros2 launch twist_to_joystick_converter twist_to_joystick.launch.py params_file:=/path/to/my_chair.yaml
 ```
+
+To get the values for your chair, profile and speed setting:
+
+1. **Top speeds.** Read the maximum forward and reverse speed from the drive profile (the chair's
+   programmer or remote). Convert mph to m/s, and set `max_forward_speed` and `max_reverse_speed`. Check them by publishing a few joystick values straight to
+   `luci/remote_joystick` and reading the chair display.
+2. **Turning.** Send `left_right` values to the same topic and time a turn against a mark on the
+   floor. Find the lowest value that keeps the chair turning (`turn_dead_zone`) and the rate at
+   100 (`max_turn_rate`). Check a few values in between.
+3. **Test with a rider if the chair will carry one**, because the response can change with load.
 
 ## Build
 

@@ -12,40 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Calibration for the Quickie Q500M.
+# Calibration for the Quickie Q500M on drive profile 3, speed setting 3.
+# For another chair, profile or speed setting, copy this file and change the
+# numbers. The README explains how (see "Using your own calibration").
 #
-# Notes on the forward/back fit (for the chair test):
-#   * The cubic below passes through the original two linear fits only at
-#     v = -0.3, 0.5 and 1.0 m/s and differs from them by up to about 10
-#     joystick units in between. The original linear fits were
-#       forward (v > 0): js = (v + 0.0206) / 0.010724
-#       reverse (v < 0): js = (v - 0.0004) / 0.00316
-#   * Forward reaches ~1.05 m/s at js 100, reverse only ~0.32 m/s at js -100.
-# Notes on the left/right fit:
-#   * A positive angular.z (counter-clockwise) gives a negative left_right.
-#   * Because of angular_offset, any nonzero yaw gives about +5, in the same
-#     direction whichever way it points, even when tiny (+/-1e-6 rad/s both
-#     give 5). Only an exact 0.0 gives 0.
-# Keyed with a wildcard so it still applies if the node is renamed or
-# launched in a namespace.
+# Forward and reverse were read off the chair display with one rider seated.
+#
+# A positive angular.z (counter-clockwise) gives a negative left_right.
 /**:
   ros__parameters:
-    # Values may be written as integers or floats. Parameters are read once at
-    # startup and cannot be changed with `ros2 param set`.
-    #
-    # Forward/back: js = c3 * v^3 - c2 * v^2 + c1 * v   (v in m/s)
-    forward_coeff_3: 208.6
-    forward_coeff_2: 316.7
-    forward_coeff_1: 203.3
-    # Left/right: js = (w - angular_offset) / angular_slope   (w in rad/s)
-    angular_offset: 0.0676
-    angular_slope: -0.012212
-    # Joystick output limits
+    # Joystick value is a percentage of the profile's top speed.
+    max_forward_speed: 1.028   # m/s (2.3 mph)
+    max_reverse_speed: 0.313   # m/s (0.7 mph)
+    # The chair won't turn below the dead zone, then speeds up to the top rate.
+    max_turn_rate: 0.524       # rad/s at joystick 100
+    turn_dead_zone: 18.0       # joystick units
     js_min: -100
     js_max: 100
-    # Seconds without a cmd_vel before zero joystick is published.
-    # A value <= 0 disables this.
+    # Send zero if no cmd_vel arrives for this many seconds (0 turns it off).
     cmd_vel_timeout: 0.5
-    # LuciJoystick.input_source: 1 = autonomous remote, 5 = shared remote.
-    # LUCI only uses commands from an input source that has been activated.
+    # 1 = autonomous remote, 5 = shared remote.
     input_source: 1
