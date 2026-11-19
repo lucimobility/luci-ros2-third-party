@@ -32,10 +32,4 @@ Launches
 ros2 launch twist_to_joystick_converter twist_to_joystick.launch.py
 ```
 
-This launch file lives in the `twist_to_joystick_converter` package, not in `luci_third_party`. It is not started by `wheelchair.launch.py`, which must be running as well so that the grpc interface node can pass the joystick commands on to the chair. The node does not activate remote control, so LUCI ignores its commands until you activate a remote input source by hand. The [package README](../twist_to_joystick_converter/README.md) has the commands.
-
-Launches
-
-- twist to joystick node (converts `cmd_vel` into `luci/remote_joystick`)
-  - `params_file` sets the calibration, default is the Q500M `config/q500m.yaml`
-  - `cmd_vel_topic` sets the Twist topic to listen to
+This launch file lives in the separate `twist_to_joystick_converter` package and is not started by `wheelchair.launch.py`. See the [package README](../twist_to_joystick_converter/README.md) for usage, launch arguments and safety notes.
