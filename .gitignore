@@ -4,6 +4,8 @@ install/
 log/
 debian/
 .obj-*
+.pybuild/
+*.egg-info/
 
 # Compiled objects
 *.o
