@@ -22,10 +22,10 @@ The launch file starts the joint state publisher and robot state publisher for t
 
 ## Twist to joystick converter
 
-First start the chair interface with the wheelchair launch file above, since this node only publishes ROS topics and relies on the gRPC interface node to reach the chair. Then, after building and sourcing the workspace, run:
+The `twist_to_joystick_converter` package converts `cmd_vel` (`geometry_msgs/Twist`) into `luci/remote_joystick` messages. Start the chair interface with the wheelchair launch file above first, then run:
 
 ```bash
 ros2 launch twist_to_joystick_converter twist_to_joystick.launch.py
 ```
 
-This converts `cmd_vel` (`geometry_msgs/Twist`) into `luci/remote_joystick` messages with the remote input source set. It does not activate or remove remote control on the chair: you do that by hand with the interface's services, and LUCI ignores the commands until a remote input source is active. The package README has the commands. The calibration is for the Q500M and is not yet validated on a chair, so read the [package README](../twist_to_joystick_converter/README.md) before driving.
+The calibration was validated on a Quickie Q500M (drive profile 3, speed setting 3, one rider) and only holds for that chair, profile and speed setting. See the [package README](../twist_to_joystick_converter/README.md) for setup, remote control activation and safety notes before driving.

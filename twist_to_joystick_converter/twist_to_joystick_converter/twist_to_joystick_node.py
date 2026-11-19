@@ -34,8 +34,9 @@ from twist_to_joystick_converter.conversion import (
 # Publish period, 20 Hz (LUCI needs more than 10 Hz).
 PUBLISH_PERIOD_S = 0.05
 
-# Maximum cmd_vel_timeout, in seconds.
-MAX_CMD_VEL_TIMEOUT_S = 3600.0
+# Maximum cmd_vel_timeout, in seconds. The timeout is what stops the chair
+# when cmd_vel stops, so it cannot be disabled or set to more than a moment.
+MAX_CMD_VEL_TIMEOUT_S = 2.0
 
 # LuciJoystick.input_source values for remote commands.
 INPUT_SOURCE_AUTONOMOUS_REMOTE = 1
@@ -62,13 +63,12 @@ class JoystickConverter(Node):
         except ValueError as error:
             raise ConfigurationError(str(error)) from error
 
-        # Seconds without cmd_vel before publishing zero; <= 0 disables.
+        # Seconds without cmd_vel before publishing zero.
         self.cmd_vel_timeout_ = self._declare('cmd_vel_timeout', 0.5)
-        if (not math.isfinite(self.cmd_vel_timeout_) or
-                self.cmd_vel_timeout_ > MAX_CMD_VEL_TIMEOUT_S):
+        if not (0.0 < self.cmd_vel_timeout_ <= MAX_CMD_VEL_TIMEOUT_S):
             raise ConfigurationError(
-                'cmd_vel_timeout must be at most {}, got {}'.format(
-                    MAX_CMD_VEL_TIMEOUT_S, self.cmd_vel_timeout_))
+                'cmd_vel_timeout must be above 0 and at most {}, '
+                'got {}'.format(MAX_CMD_VEL_TIMEOUT_S, self.cmd_vel_timeout_))
 
         # 1 = autonomous remote, 5 = shared remote. LUCI ignores a source
         # that has not been activated.
@@ -114,8 +114,6 @@ class JoystickConverter(Node):
         return int(number)
 
     def _is_stale(self):
-        if self.cmd_vel_timeout_ <= 0.0:
-            return False
         age = self.clock_.now() - self.last_cmd_time_
         return age > Duration(seconds=self.cmd_vel_timeout_)
 
