@@ -7,7 +7,8 @@ wheelchair. It is intended as a starting point for researchers.
 > **Safety.** This node produces joystick commands for a real wheelchair.
 >
 > - The calibration constants are for the Quickie Q500M **drive
->   profile 3 at speed setting 3**.
+>   profile 3 at speed setting 3**. They were validated end-to-end on that chair, from `cmd_vel`
+>   to chair motion, with one rider seated.
 > - The calibration only holds for the chair, drive profile and speed setting it was measured at.
 >   You are encouraged to measure your own
 >   and keep a params file for each chair, profile and speed setting you use (see
@@ -171,17 +172,12 @@ To get the values for your chair, profile and speed setting:
 
 ## Build
 
-Run these from the repository root. A plain `colcon build` there only builds the root
-`luci_third_party` package, because colcon does not search for packages inside a directory that is
-already a package. Point colcon at this package explicitly with `--paths`:
+From the repository root (see the root [README](../README.md#building) for why `--paths` is needed):
 
 ```bash
 colcon build --paths twist_to_joystick_converter
 source install/setup.bash
 ```
-
-This package is built from source with colcon. It is not part of the `.deb` that the repo's
-`build-package.sh` produces.
 
 ## Run
 

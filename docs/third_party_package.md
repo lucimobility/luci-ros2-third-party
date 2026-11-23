@@ -1,31 +1,32 @@
-# luci-third-party
+# luci_third_party
+
+This page covers the root `luci_third_party` package and its two launch files. The other packages
+in this repo have their own READMEs, linked from the [root README](../README.md).
+
+After correctly sourcing ROS2, use the launch files below.
 
 ## Wheelchair launch file
 
-After correctly sourcing ROS2, run the following to start the node:
-
 ```bash
-ros2 launch luci_third_party wheelchair.launch.py ip:={Chair IP address}
+ros2 launch luci_third_party wheelchair.launch.py ip:=<chair ip address>
 ```
 
-This launch files starts up the gRPC interface node and transformation node. The ip launch argument is used to specify the specific chair to connect to.
+Launches:
+
+- The gRPC interface node (from `luci_grpc_interface`). The required `ip` launch argument is the
+  address of the chair to connect to, and is passed to the node with its `-a` flag.
+- The LUCI transform node (from `luci_transforms`), which publishes the transforms between
+  `base_link` and all the sensors. The transforms are for the Quickie 500M wheelchair.
 
 ## URDF launch file
-
-Run the following command:
 
 ```bash
 ros2 launch luci_third_party awl_description.launch.py
 ```
 
-The launch file starts the joint state publisher and robot state publisher for the urdf as well as showing it in rviz.
+Launches:
 
-## Twist to joystick converter
-
-The `twist_to_joystick_converter` package converts `cmd_vel` (`geometry_msgs/Twist`) into `luci/remote_joystick` messages. Start the chair interface with the wheelchair launch file above first, then run:
-
-```bash
-ros2 launch twist_to_joystick_converter twist_to_joystick.launch.py
-```
-
-The calibration was validated on a Quickie Q500M (drive profile 3, speed setting 3, one rider) and only holds for that chair, profile and speed setting. See the [package README](../twist_to_joystick_converter/README.md) for setup, remote control activation and safety notes before driving.
+- The joint state publisher, which publishes the joints from the xacro file.
+- The robot state publisher, which publishes the description of the robot.
+- rviz2, using the rviz config to show the robot description topic. The `rviz_config_file` launch
+  argument sets the config file, and defaults to the installed `config/luci_view.rviz`.
