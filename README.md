@@ -4,6 +4,12 @@
 
 This repo is for open source packages provided by researchers and the community using the LUCI ROS2 SDK
 
+## Packages in this repo
+
+- [luci_third_party](docs/third_party_package.md) - the root package: launch files for the chair interface and transforms, and the robot description (URDF).
+- [luci_full_camera_pointcloud](luci_full_camera_pointcloud/) - combines the left, right and rear depth images into one point cloud.
+- [twist_to_joystick_converter](twist_to_joystick_converter/) - converts `cmd_vel` (`Twist`) into LUCI joystick commands. Read its README before driving a chair.
+
 ## How to contribute
 
 This project welcomes third-party code via pull requests.
